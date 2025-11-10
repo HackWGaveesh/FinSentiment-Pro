@@ -10,7 +10,7 @@ export default {
       colors: {
         dark: {
           bg: '#0a0a0f',
-          card: '#1a1a24',
+          card: '#151521',
           border: '#2d2d3d',
         },
         light: {
@@ -18,6 +18,47 @@ export default {
           card: '#f8fafc',
           border: '#e2e8f0',
         },
+        brand: {
+          primary: '#6366F1', // indigo-500
+          secondary: '#8B5CF6', // violet-500
+          accent: '#06B6D4', // cyan-500
+        },
+      },
+      fontFamily: {
+        sans: [
+          'Inter',
+          "ui-sans-serif",
+          "system-ui",
+          "-apple-system",
+          "Segoe UI",
+          "Roboto",
+          "Helvetica Neue",
+          "Arial",
+          "Noto Sans",
+          "Apple Color Emoji",
+          "Segoe UI Emoji",
+          "Segoe UI Symbol",
+          "Noto Color Emoji",
+          "sans-serif"
+        ],
+      },
+      container: {
+        center: true,
+        padding: {
+          DEFAULT: '1rem',
+          sm: '1.5rem',
+          lg: '2rem',
+          xl: '2.5rem',
+          '2xl': '3rem',
+        },
+      },
+      boxShadow: {
+        'elevated': '0 10px 30px rgba(0,0,0,0.08)',
+        'soft': '0 4px 16px rgba(0,0,0,0.06)',
+      },
+      borderRadius: {
+        xl: '1rem',
+        '2xl': '1.25rem',
       },
       animation: {
         'shimmer': 'shimmer 2s infinite',

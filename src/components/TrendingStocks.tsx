@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { TrendingUp, TrendingDown, Minus, RefreshCw, ArrowRight } from 'lucide-react';
+import { TrendingUp, TrendingDown, Minus, RefreshCw, Filter, ArrowUpDown, Activity } from 'lucide-react';
 import axios from 'axios';
+import { useStore } from '@/store/useStore';
 
 interface TrendingStock {
   ticker: string;
@@ -21,11 +22,19 @@ interface TrendingResponse {
   count: number;
 }
 
+type FilterType = 'All' | 'Bullish' | 'Bearish' | 'Neutral';
+type SortType = 'sentiment' | 'change' | 'confidence';
+
 const TrendingStocks: React.FC = () => {
   const [trending, setTrending] = useState<TrendingStock[]>([]);
+  const [filteredTrending, setFilteredTrending] = useState<TrendingStock[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastUpdate, setLastUpdate] = useState<string>('');
+  const [filter, setFilter] = useState<FilterType>('All');
+  const [sortBy, setSortBy] = useState<SortType>('sentiment');
+  
+  const { setCurrentTicker, setSentimentData, setLoading: setGlobalLoading } = useStore();
 
   const fetchTrending = async () => {
     setLoading(true);
@@ -33,6 +42,7 @@ const TrendingStocks: React.FC = () => {
     try {
       const response = await axios.get<TrendingResponse>('http://localhost:5000/api/trending');
       setTrending(response.data.trending);
+      setFilteredTrending(response.data.trending);
       setLastUpdate(new Date(response.data.timestamp).toLocaleTimeString());
     } catch (err) {
       setError('Failed to fetch trending stocks. Please try again.');
@@ -46,6 +56,53 @@ const TrendingStocks: React.FC = () => {
     // Load once on mount; no auto-refresh
     fetchTrending();
   }, []);
+
+  // Filter and sort trending stocks
+  useEffect(() => {
+    let filtered = [...trending];
+
+    // Apply filter
+    if (filter !== 'All') {
+      filtered = filtered.filter(stock => stock.sentimentLabel === filter);
+    }
+
+    // Apply sort
+    filtered.sort((a, b) => {
+      switch (sortBy) {
+        case 'sentiment':
+          return Math.abs(b.sentiment) - Math.abs(a.sentiment);
+        case 'change':
+          return Math.abs(b.changePercent) - Math.abs(a.changePercent);
+        case 'confidence':
+          return b.confidence - a.confidence;
+        default:
+          return 0;
+      }
+    });
+
+    setFilteredTrending(filtered);
+  }, [trending, filter, sortBy]);
+
+  const handleAnalyzeStock = async (stock: TrendingStock) => {
+    setGlobalLoading(true);
+    setCurrentTicker(stock.ticker);
+
+    // Scroll to dashboard
+    const dashboard = document.querySelector('#dashboard');
+    dashboard?.scrollIntoView({ behavior: 'smooth' });
+
+    try {
+      const response = await axios.post('http://localhost:5000/api/analyze', {
+        ticker: stock.ticker,
+        days: 7,
+      });
+      setSentimentData(response.data);
+    } catch (error) {
+      console.error('Analysis error:', error);
+    } finally {
+      setGlobalLoading(false);
+    }
+  };
 
   const getSentimentIcon = (label: string) => {
     if (label === 'Bullish') return <TrendingUp className="w-5 h-5 text-green-500" />;
@@ -120,6 +177,46 @@ const TrendingStocks: React.FC = () => {
               </motion.button>
             </motion.div>
           </div>
+          
+          {/* Filter and Sort Toolbar */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between bg-white/50 dark:bg-dark-card/50 rounded-xl p-4 border border-light-border dark:border-dark-border"
+          >
+            {/* Filters */}
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-sm font-semibold text-slate-600 dark:text-slate-400">Filter:</span>
+              {(['All', 'Bullish', 'Bearish', 'Neutral'] as FilterType[]).map((f) => (
+                <button
+                  key={f}
+                  onClick={() => setFilter(f)}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                    filter === f
+                      ? 'bg-indigo-600 text-white shadow-md'
+                      : 'bg-white dark:bg-dark-card text-slate-700 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 border border-slate-200 dark:border-slate-700'
+                  }`}
+                >
+                  {f} {f !== 'All' && `(${trending.filter(s => s.sentimentLabel === f).length})`}
+                </button>
+              ))}
+            </div>
+
+            {/* Sort */}
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-semibold text-slate-600 dark:text-slate-400">Sort by:</span>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as SortType)}
+                className="px-3 py-1.5 rounded-lg bg-white dark:bg-dark-card border border-slate-200 dark:border-slate-700 text-sm font-medium text-slate-700 dark:text-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              >
+                <option value="sentiment">Sentiment Strength</option>
+                <option value="change">Price Change</option>
+                <option value="confidence">Confidence</option>
+              </select>
+            </div>
+          </motion.div>
         </div>
 
         {/* Loading State */}
@@ -153,22 +250,26 @@ const TrendingStocks: React.FC = () => {
         )}
 
         {/* Trending Stocks Grid */}
-        {!loading && !error && trending.length > 0 && (
+        {!loading && !error && filteredTrending.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {trending.map((stock, index) => (
+            {filteredTrending.map((stock, index) => (
               <motion.div
                 key={stock.ticker}
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
-                className={`glass-card p-6 border-2 bg-gradient-to-br ${getSentimentColor(stock.sentiment)} hover:shadow-lg transition-all cursor-pointer group`}
-                onClick={() => {
-                  // Navigate to full analysis (you can wire this to your existing search/analyze flow)
-                  window.location.hash = 'dashboard';
-                  // Trigger analysis for this ticker (integrate with your existing flow)
-                  console.log('Analyze:', stock.ticker);
-                }}
+                whileHover={{ y: -4, boxShadow: '0 20px 40px rgba(0,0,0,0.15)' }}
+                className={`glass-card p-6 border-2 bg-gradient-to-br ${getSentimentColor(stock.sentiment)} cursor-pointer group relative overflow-hidden`}
+                onClick={() => handleAnalyzeStock(stock)}
               >
+                {/* Hover Gradient Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/0 to-purple-500/0 group-hover:from-indigo-500/10 group-hover:to-purple-500/10 transition-all duration-300 pointer-events-none" />
+                
+                <div className="relative z-10">
+                {/* Hover Gradient Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/0 to-purple-500/0 group-hover:from-indigo-500/10 group-hover:to-purple-500/10 transition-all duration-300 pointer-events-none" />
+                
+                <div className="relative z-10">
                 {/* Header */}
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">
@@ -217,9 +318,10 @@ const TrendingStocks: React.FC = () => {
                 {/* CTA */}
                 <div className="mt-4 pt-4 border-t border-slate-300 dark:border-slate-600">
                   <div className="flex items-center justify-between text-sm text-indigo-600 dark:text-indigo-400 font-medium group-hover:translate-x-1 transition-transform">
-                    <span>View Full Analysis</span>
-                    <ArrowRight className="w-4 h-4" />
+                    <span>Click to Analyze</span>
+                    <TrendingUp className="w-4 h-4" />
                   </div>
+                </div>
                 </div>
               </motion.div>
             ))}
@@ -227,6 +329,28 @@ const TrendingStocks: React.FC = () => {
         )}
 
         {/* Empty State */}
+        {!loading && !error && filteredTrending.length === 0 && trending.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="glass-card p-12 text-center"
+          >
+            <div className="text-6xl mb-4">🔍</div>
+            <h3 className="text-2xl font-semibold mb-2 text-slate-900 dark:text-white">
+              No {filter} Stocks Found
+            </h3>
+            <p className="text-slate-600 dark:text-slate-400 mb-4">
+              Try adjusting your filters
+            </p>
+            <button
+              onClick={() => setFilter('All')}
+              className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+            >
+              Show All Stocks
+            </button>
+          </motion.div>
+        )}
+
         {!loading && !error && trending.length === 0 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
