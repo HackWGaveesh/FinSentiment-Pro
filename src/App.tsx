@@ -2,7 +2,11 @@ import React, { useEffect } from 'react';
 import { useStore } from './store/useStore';
 import Header from './components/Header';
 import Hero from './components/Hero';
+import Features from './components/Features';
+import TrendingStocks from './components/TrendingStocks';
 import Dashboard from './components/Dashboard';
+import About from './components/About';
+import Contact from './components/Contact';
 import Footer from './components/Footer';
 
 function App() {
@@ -51,7 +55,11 @@ function App() {
       
       <main id="main-content">
         <Hero />
+        <Features />
+        <TrendingStocks />
         <Dashboard />
+        <About />
+        <Contact />
       </main>
       
       <Footer />

@@ -15,36 +15,38 @@ const SourceComparison: React.FC<Props> = ({ sources }) => {
   };
 
   return (
-    <div className="glass-card p-6">
+    <div className="glass-card p-6 h-full min-h-[460px] flex flex-col">
       <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-4">
         Sentiment by News Source
       </h3>
 
-      <ResponsiveContainer width="100%" height={280}>
-        <BarChart data={sources} layout="vertical">
-          <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.1} />
-          <XAxis type="number" domain={[-100, 100]} stroke="#9ca3af" style={{ fontSize: '12px' }} />
-          <YAxis
-            type="category"
-            dataKey="source"
-            stroke="#9ca3af"
-            style={{ fontSize: '11px' }}
-            width={120}
-          />
-          <Tooltip
-            contentStyle={{
-              backgroundColor: 'rgba(30, 30, 40, 0.9)',
-              border: '1px solid #4b5563',
-              borderRadius: '8px',
-            }}
-          />
-          <Bar dataKey="sentiment" radius={[0, 8, 8, 0]}>
-            {sources.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={getColor(entry.sentiment)} />
-            ))}
-          </Bar>
-        </BarChart>
-      </ResponsiveContainer>
+      <div className="flex-grow flex">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={sources} layout="vertical" margin={{ top: 10, right: 20, bottom: 10, left: 10 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.12} />
+            <XAxis type="number" domain={[-100, 100]} stroke="#9ca3af" style={{ fontSize: '12px' }} />
+            <YAxis
+              type="category"
+              dataKey="source"
+              stroke="#9ca3af"
+              style={{ fontSize: '11px' }}
+              width={110}
+            />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: 'rgba(30, 30, 40, 0.92)',
+                border: '1px solid #4b5563',
+                borderRadius: '8px',
+              }}
+            />
+            <Bar dataKey="sentiment" radius={[0, 8, 8, 0]}>
+              {sources.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={getColor(entry.sentiment)} />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
 
       {/* Article Counts */}
       <div className="mt-4 space-y-2">

@@ -19,10 +19,12 @@ build/
 *.swo
 *~
 
-# Environment
+# Environment / secrets
 .env
 .env.local
 .env.*.local
+backend/.env
+*.env.backup
 
 # Logs
 logs/
@@ -50,3 +52,10 @@ backend/models/
 # Coverage
 coverage/
 .nyc_output/
+
+# Python cache (additional)
+__pycache__/
+*/__pycache__/
+
+# Vite specific
+.vite/

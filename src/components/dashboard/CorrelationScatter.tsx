@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
 import type { CorrelationDataPoint } from '@/types';
 
@@ -32,7 +31,7 @@ const CorrelationScatter: React.FC<Props> = ({ data, coefficient }) => {
   };
 
   return (
-    <div className="glass-card p-6">
+    <div className="glass-card p-6 h-full min-h-[460px] flex flex-col">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-xl font-semibold text-slate-900 dark:text-white">
           Sentiment vs. Price Correlation
@@ -48,7 +47,8 @@ const CorrelationScatter: React.FC<Props> = ({ data, coefficient }) => {
         </div>
       </div>
 
-      <ResponsiveContainer width="100%" height={300}>
+      <div className="flex-grow">
+      <ResponsiveContainer width="100%" height="100%">
         <ScatterChart>
           <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.1} />
           <XAxis
@@ -97,9 +97,10 @@ const CorrelationScatter: React.FC<Props> = ({ data, coefficient }) => {
           </Scatter>
         </ScatterChart>
       </ResponsiveContainer>
+      </div>
 
       {/* Quadrant Explanation */}
-      <div className="mt-4 grid grid-cols-2 gap-3 text-xs">
+  <div className="mt-4 grid grid-cols-2 gap-3 text-xs">
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-green-500" />
           <span className="text-slate-600 dark:text-slate-400">Positive Sentiment + Price Up</span>

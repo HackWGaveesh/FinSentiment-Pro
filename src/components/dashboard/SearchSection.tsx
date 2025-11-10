@@ -18,7 +18,7 @@ const SearchSection: React.FC = () => {
   const [isListening, setIsListening] = useState(false);
   const [recognizedTicker, setRecognizedTicker] = useState('');
   const [showConfirmation, setShowConfirmation] = useState(false);
-  const [dateRange, setDateRange] = useState<'24h' | '7d' | '30d'>('7d');
+  const [dateRange, setDateRange] = useState<'24h' | '7d' | '30d' | '365d'>('7d');
   const [suggestions, setSuggestions] = useState<StockSuggestion[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
@@ -147,7 +147,7 @@ const SearchSection: React.FC = () => {
 
     try {
       // Convert date range to days
-      const daysMap = { '24h': 1, '7d': 7, '30d': 30 };
+      const daysMap = { '24h': 1, '7d': 7, '30d': 30, '365d': 365 };
       const days = daysMap[dateRange];
 
       const response = await axios.post('http://localhost:5000/api/analyze', {
@@ -180,18 +180,24 @@ const SearchSection: React.FC = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="mb-8">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="glass-card p-8"
+        className="glass-card p-6 sm:p-8"
       >
-        <h2 className="text-3xl font-bold mb-6 text-center gradient-text">
-          Stock Sentiment Analysis
-        </h2>
+        {/* Header Section */}
+        <div className="mb-6 text-center">
+          <h2 className="text-3xl font-bold gradient-text mb-2">
+            Stock Sentiment Analysis
+          </h2>
+          <p className="text-sm text-slate-600 dark:text-slate-400">
+            Analyze real-time market sentiment for any stock
+          </p>
+        </div>
 
         {/* Main Search Input */}
-        <div className="flex gap-3 mb-6">
+        <div className="flex flex-col sm:flex-row gap-3 mb-6">
           <div className="flex-1 relative" ref={suggestionsRef}>
             <div className="relative">
               <input
@@ -204,7 +210,7 @@ const SearchSection: React.FC = () => {
                   if (suggestions.length > 0) setShowSuggestions(true);
                 }}
                 placeholder="Search by company name or ticker (e.g., Apple, AAPL)"
-                className="input-field pr-10"
+                className="input-field pr-10 w-full"
                 autoComplete="off"
                 aria-label="Stock ticker input"
               />
@@ -220,7 +226,7 @@ const SearchSection: React.FC = () => {
                     setSuggestions([]);
                     setShowSuggestions(false);
                   }}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
                   aria-label="Clear input"
                 >
                   <X className="w-5 h-5" />
@@ -235,31 +241,31 @@ const SearchSection: React.FC = () => {
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  className="absolute z-50 w-full mt-2 bg-white dark:bg-dark-card border border-light-border dark:border-dark-border rounded-lg shadow-xl max-h-80 overflow-y-auto custom-scrollbar"
+                  className="absolute z-50 w-full mt-2 bg-white dark:bg-dark-card border border-light-border dark:border-dark-border rounded-xl shadow-2xl max-h-80 overflow-y-auto custom-scrollbar"
                 >
                   {suggestions.map((suggestion, index) => (
                     <motion.button
                       key={`${suggestion.ticker}-${index}`}
                       whileHover={{ backgroundColor: 'rgba(99, 102, 241, 0.1)' }}
                       onClick={() => handleSelectSuggestion(suggestion)}
-                      className="w-full px-4 py-3 text-left hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors border-b border-light-border dark:border-dark-border last:border-b-0"
+                      className="w-full px-4 py-3 text-left hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors border-b border-light-border dark:border-dark-border last:border-b-0 first:rounded-t-xl last:rounded-b-xl"
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex-1">
-                          <div className="font-medium text-slate-900 dark:text-slate-100">
+                          <div className="font-semibold text-slate-900 dark:text-slate-100">
                             {suggestion.name}
                           </div>
-                          <div className="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-2 mt-1">
-                            <span className="font-mono font-semibold text-indigo-600 dark:text-indigo-400">
+                          <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-2 mt-1">
+                            <span className="font-mono font-bold text-indigo-600 dark:text-indigo-400">
                               {suggestion.ticker}
                             </span>
-                            <span className="text-xs">•</span>
+                            <span>•</span>
                             <span>{suggestion.exchange}</span>
-                            <span className="text-xs">•</span>
+                            <span>•</span>
                             <span>{suggestion.country}</span>
                           </div>
                         </div>
-                        <TrendingUp className="w-5 h-5 text-slate-400" />
+                        <TrendingUp className="w-5 h-5 text-indigo-400" />
                       </div>
                     </motion.button>
                   ))}
@@ -273,15 +279,15 @@ const SearchSection: React.FC = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={handleVoiceInput}
-            className={`p-3 rounded-lg transition-all ${
+            className={`p-3 sm:p-4 rounded-xl transition-all shadow-md ${
               isListening
-                ? 'bg-red-500 text-white animate-pulse'
-                : 'bg-light-card dark:bg-dark-card border border-light-border dark:border-dark-border hover:border-indigo-500'
+                ? 'bg-red-500 text-white animate-pulse shadow-red-500/50'
+                : 'bg-white dark:bg-dark-card border-2 border-light-border dark:border-dark-border hover:border-indigo-500 hover:shadow-lg'
             }`}
             aria-label="Voice input"
             title="Voice input (V)"
           >
-            <Mic className="w-6 h-6" />
+            <Mic className="w-5 h-5 sm:w-6 sm:h-6" />
           </motion.button>
 
           {/* Analyze Button */}
@@ -289,7 +295,7 @@ const SearchSection: React.FC = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={handleAnalyze}
-            className="btn-primary px-8"
+            className="btn-primary px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-semibold shadow-lg hover:shadow-xl"
           >
             Analyze
           </motion.button>
@@ -330,41 +336,43 @@ const SearchSection: React.FC = () => {
 
         {/* Date Range Selector */}
         <div className="mb-6">
-          <label className="block text-sm font-medium mb-2 text-slate-700 dark:text-slate-300">
-            <Calendar className="w-4 h-4 inline mr-2" />
+          <label className="flex items-center text-sm font-semibold mb-3 text-slate-700 dark:text-slate-300">
+            <Calendar className="w-4 h-4 mr-2" />
             Time Period
           </label>
-          <div className="flex gap-2">
-            {(['24h', '7d', '30d'] as const).map((range) => (
-              <button
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {(['24h', '7d', '30d', '365d'] as const).map((range) => (
+              <motion.button
                 key={range}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
                 onClick={() => setDateRange(range)}
-                className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                className={`px-4 py-3 rounded-xl font-semibold transition-all shadow-md ${
                   dateRange === range
-                    ? 'bg-indigo-600 text-white shadow-lg'
-                    : 'bg-light-card dark:bg-dark-card border border-light-border dark:border-dark-border hover:border-indigo-500'
+                    ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-indigo-500/50 shadow-lg'
+                    : 'bg-white dark:bg-dark-card border-2 border-light-border dark:border-dark-border hover:border-indigo-500 text-slate-700 dark:text-slate-300 hover:shadow-lg'
                 }`}
               >
-                {range === '24h' ? '24 Hours' : range === '7d' ? '7 Days' : '30 Days'}
-              </button>
+                {range === '24h' ? '24 Hours' : range === '7d' ? '7 Days' : range === '30d' ? '30 Days' : '1 Year'}
+              </motion.button>
             ))}
           </div>
         </div>
 
         {/* Recent Searches */}
         {recentSearches.length > 0 && (
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-2 text-slate-700 dark:text-slate-300">
+          <div className="mb-6">
+            <label className="block text-sm font-semibold mb-3 text-slate-700 dark:text-slate-300">
               Recent Searches
             </label>
             <div className="flex flex-wrap gap-2">
               {recentSearches.map((search) => (
                 <motion.button
                   key={search}
-                  whileHover={{ scale: 1.05 }}
+                  whileHover={{ scale: 1.05, y: -2 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => setTicker(search)}
-                  className="px-3 py-1 bg-light-card dark:bg-dark-card border border-light-border dark:border-dark-border rounded-full text-sm hover:border-indigo-500 transition-colors"
+                  className="px-4 py-2 bg-white dark:bg-dark-card border-2 border-slate-200 dark:border-slate-700 rounded-lg text-sm font-medium hover:border-indigo-500 hover:shadow-md transition-all text-slate-700 dark:text-slate-300"
                 >
                   {search}
                 </motion.button>
@@ -375,17 +383,17 @@ const SearchSection: React.FC = () => {
 
         {/* Popular Tickers */}
         <div>
-          <label className="block text-sm font-medium mb-2 text-slate-700 dark:text-slate-300">
+          <label className="block text-sm font-semibold mb-3 text-slate-700 dark:text-slate-300">
             Popular Tickers
           </label>
           <div className="flex flex-wrap gap-2">
             {POPULAR_TICKERS.map((popularTicker) => (
               <motion.button
                 key={popularTicker}
-                whileHover={{ scale: 1.05 }}
+                whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setTicker(popularTicker)}
-                className="px-3 py-1 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 border border-indigo-200 dark:border-indigo-800 rounded-full text-sm font-medium text-indigo-700 dark:text-indigo-300 hover:from-indigo-100 hover:to-purple-100 dark:hover:from-indigo-900/30 dark:hover:to-purple-900/30 transition-colors"
+                className="px-4 py-2 bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/30 dark:to-purple-900/30 border-2 border-indigo-200 dark:border-indigo-800 rounded-lg text-sm font-semibold text-indigo-700 dark:text-indigo-300 hover:from-indigo-100 hover:to-purple-100 dark:hover:from-indigo-900/40 dark:hover:to-purple-900/40 hover:shadow-md transition-all"
               >
                 {popularTicker}
               </motion.button>

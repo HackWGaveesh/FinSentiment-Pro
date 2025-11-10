@@ -13,7 +13,16 @@ import time
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
-load_dotenv()
+# Try multiple locations to ensure keys load whether app is started from repo root or backend folder
+load_dotenv()  # current working directory
+try:
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    # Load backend/.env explicitly
+    load_dotenv(os.path.join(BASE_DIR, '.env'))
+    # Also attempt repo root .env (one level up) without overriding existing values
+    load_dotenv(os.path.join(BASE_DIR, '..', '.env'))
+except Exception:
+    pass
 
 app = Flask(__name__)
 CORS(app)
@@ -41,6 +50,16 @@ NEWS_API_KEY = os.getenv('NEWS_API_KEY', 'your_newsapi_key_here')
 ALPHA_VANTAGE_KEY = os.getenv('ALPHA_VANTAGE_KEY', 'your_alphavantage_key_here')
 HF_API_KEY = os.getenv('HF_API_KEY', 'your_huggingface_key_here')
 INDIAN_STOCK_API_KEY = os.getenv('INDIAN_STOCK_API_KEY', 'your_indian_stock_api_key_here')
+
+# Quick sanity log (masked) to help debug missing API keys without leaking secrets
+def _mask(s: str) -> str:
+    if not s or s == 'your_indian_stock_api_key_here':
+        return 'MISSING'
+    if len(s) <= 8:
+        return '****'
+    return s[:4] + '...' + s[-4:]
+
+print(f"Config: INDIAN_STOCK_API_KEY={_mask(INDIAN_STOCK_API_KEY)} | DEMO_MODE={DEMO_MODE}")
 
 # Initialize FinBERT model for sentiment analysis
 print("Loading FinBERT model...")
@@ -1275,6 +1294,134 @@ def get_quote():
         
     except Exception as e:
         print(f"Quote endpoint error: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/trending', methods=['GET'])
+def get_trending():
+    """Fetch trending stocks with quick sentiment analysis"""
+    try:
+        import http.client
+        
+        # Fetch trending stocks from Indian Stock API
+        conn = http.client.HTTPSConnection('stock.indianapi.in')
+        headers = {'x-api-key': INDIAN_STOCK_API_KEY}
+        
+        conn.request('GET', '/trending', headers=headers)
+        res = conn.getresponse()
+        data = res.read()
+        
+        if res.status != 200:
+            print(f"Trending API error: Status {res.status}")
+            return jsonify({'error': 'Unable to fetch trending stocks'}), 500
+        
+        trending_stocks = json.loads(data.decode('utf-8'))
+
+        # Normalize response shape to a list
+        trending_list = []
+        if isinstance(trending_stocks, dict):
+            # Handle structure like {"trending_stocks": {"top_gainers": [...], "top_losers": [...]}}
+            if 'trending_stocks' in trending_stocks and isinstance(trending_stocks['trending_stocks'], dict):
+                ts = trending_stocks['trending_stocks']
+                top_gainers = ts.get('top_gainers', []) if isinstance(ts.get('top_gainers'), list) else []
+                top_losers = ts.get('top_losers', []) if isinstance(ts.get('top_losers'), list) else []
+                trending_list = top_gainers + top_losers
+            else:
+                # Common keys that may contain the list directly
+                for key in ['data', 'trending', 'results', 'items', 'stocks', 'top_gainers', 'top_losers']:
+                    if key in trending_stocks and isinstance(trending_stocks[key], list):
+                        trending_list.extend(trending_stocks[key])
+                if not trending_list:
+                    # Fallback: take first list value in dict
+                    first_list = next((v for v in trending_stocks.values() if isinstance(v, list)), [])
+                    trending_list = first_list
+        elif isinstance(trending_stocks, list):
+            trending_list = trending_stocks
+        else:
+            print(f"Unexpected trending data type: {type(trending_stocks)}")
+            trending_list = []
+        
+        # Get quick sentiment for each trending stock (lightweight: use recent news only)
+        results = []
+        for stock in trending_list[:15]:  # Limit to top 15
+            try:
+                # Normalize field names from different possible shapes
+                ticker = stock.get('symbol') or stock.get('ticker') or stock.get('code') or stock.get('ric') or ''
+                if not ticker:
+                    continue
+                
+                # Normalize numbers possibly provided as strings
+                def _to_float(x, default=0.0):
+                    try:
+                        if isinstance(x, (int, float)):
+                            return float(x)
+                        if isinstance(x, str):
+                            return float(x.replace(',', '').strip())
+                    except Exception:
+                        return float(default)
+                    return float(default)
+
+                # Fetch minimal news for sentiment (last 3 days, fewer articles)
+                articles = get_news_articles(ticker, days=3)
+                
+                if not articles:
+                    # No news = neutral sentiment
+                    results.append({
+                        'ticker': ticker,
+                        'name': stock.get('name', ticker),
+                        'price': stock.get('price', 0),
+                        'change': stock.get('change', 0),
+                        'changePercent': stock.get('changePercent', 0),
+                        'sentiment': 0,
+                        'sentimentLabel': 'Neutral',
+                        'articleCount': 0,
+                        'confidence': 50.0
+                    })
+                    continue
+                
+                # Quick sentiment calc (top 5 articles only for speed)
+                sentiments = []
+                for article in articles[:5]:
+                    text = f"{article.get('title', '')} {article.get('description', '')}"
+                    score, conf = analyze_sentiment_finbert(text)
+                    sentiments.append(score)
+                
+                avg_sentiment = np.mean(sentiments) if sentiments else 0
+                confidence = np.mean([abs(s) for s in sentiments]) if sentiments else 50.0
+                
+                # Determine label
+                if avg_sentiment > 30:
+                    label = 'Bullish'
+                elif avg_sentiment < -30:
+                    label = 'Bearish'
+                else:
+                    label = 'Neutral'
+                
+                results.append({
+                    'ticker': ticker,
+                    'name': stock.get('name') or stock.get('companyName') or stock.get('company_name') or ticker,
+                    'price': _to_float(stock.get('price') or stock.get('ltp') or stock.get('LTP') or 0),
+                    'change': _to_float(stock.get('change') or stock.get('netChange') or stock.get('net_change') or 0),
+                    'changePercent': _to_float(stock.get('changePercent') or stock.get('%Change') or stock.get('percentChange') or stock.get('percent_change') or 0),
+                    'sentiment': round(avg_sentiment, 1),
+                    'sentimentLabel': label,
+                    'articleCount': len(articles),
+                    'confidence': round(confidence, 1)
+                })
+                
+            except Exception as stock_error:
+                print(f"Error processing trending stock {stock.get('symbol', 'unknown')}: {stock_error}")
+                continue
+        
+        return jsonify({
+            'trending': results,
+            'timestamp': datetime.now().isoformat(),
+            'count': len(results)
+        })
+        
+    except Exception as e:
+        print(f"Trending endpoint error: {e}")
+        import traceback
+        traceback.print_exc()
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
