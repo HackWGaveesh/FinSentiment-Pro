@@ -28,7 +28,7 @@ const Hero: React.FC = () => {
     }, 800);
   };
 
-  const popularStocks = ['AAPL', 'TSLA', 'GOOGL', 'MSFT', 'NVDA', 'RELIANCE.NS', 'TCS.NS'];
+  const popularStocks = ['RELIANCE.NS', 'TCS.NS', 'HDFCBANK.NS', 'INFY.NS', 'ICICIBANK.NS'];
 
   const features = [
     {
@@ -128,7 +128,7 @@ const Hero: React.FC = () => {
                 value={quickTicker}
                 onChange={(e) => setQuickTicker(e.target.value.toUpperCase())}
                 onKeyPress={(e) => e.key === 'Enter' && quickTicker && handleQuickSearch(quickTicker)}
-                placeholder="Enter stock ticker (e.g., AAPL, RELIANCE.NS)..."
+                placeholder="Enter stock ticker (e.g., RELIANCE.NS, TCS.NS, INFY.NS)..."
                 className="w-full pl-12 pr-32 py-4 text-lg rounded-2xl bg-white dark:bg-dark-card border-2 border-slate-200 dark:border-slate-700 focus:border-indigo-500 dark:focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20 transition-all shadow-lg"
               />
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-6 h-6 text-slate-400" />

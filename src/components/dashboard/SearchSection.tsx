@@ -4,7 +4,7 @@ import { Search, Mic, X, Loader2, Calendar, TrendingUp } from 'lucide-react';
 import { useStore } from '@/store/useStore';
 import axios from 'axios';
 
-const POPULAR_TICKERS = ['AAPL', 'TSLA', 'GOOGL', 'MSFT', 'AMZN', 'NVDA', 'META', 'NFLX'];
+const POPULAR_TICKERS = ['RELIANCE.NS', 'TCS.NS', 'HDFCBANK.NS', 'INFY.NS', 'ICICIBANK.NS', 'HINDUNILVR.NS', 'BHARTIARTL.NS', 'SBIN.NS'];
 
 interface StockSuggestion {
   name: string;

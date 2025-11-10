@@ -1296,6 +1296,54 @@ def get_quote():
         print(f"Quote endpoint error: {e}")
         return jsonify({'error': str(e)}), 500
 
+def get_sample_trending_stocks():
+    """Return sample trending stocks data when API is unavailable"""
+    import random
+    sample_stocks = [
+        {'ticker': 'RELIANCE.NS', 'name': 'Reliance Industries Ltd', 'price': 2456.75, 'change': 45.30, 'changePercent': 1.88},
+        {'ticker': 'TCS.NS', 'name': 'Tata Consultancy Services', 'price': 3678.90, 'change': -12.45, 'changePercent': -0.34},
+        {'ticker': 'HDFCBANK.NS', 'name': 'HDFC Bank Ltd', 'price': 1689.50, 'change': 23.80, 'changePercent': 1.43},
+        {'ticker': 'INFY.NS', 'name': 'Infosys Ltd', 'price': 1456.20, 'change': -8.90, 'changePercent': -0.61},
+        {'ticker': 'ICICIBANK.NS', 'name': 'ICICI Bank Ltd', 'price': 1023.45, 'change': 34.60, 'changePercent': 3.50},
+        {'ticker': 'HINDUNILVR.NS', 'name': 'Hindustan Unilever Ltd', 'price': 2389.75, 'change': 12.35, 'changePercent': 0.52},
+        {'ticker': 'BHARTIARTL.NS', 'name': 'Bharti Airtel Ltd', 'price': 1145.80, 'change': 28.90, 'changePercent': 2.59},
+        {'ticker': 'ITC.NS', 'name': 'ITC Ltd', 'price': 456.30, 'change': -5.70, 'changePercent': -1.23},
+        {'ticker': 'SBIN.NS', 'name': 'State Bank of India', 'price': 634.90, 'change': 42.10, 'changePercent': 7.10},
+        {'ticker': 'WIPRO.NS', 'name': 'Wipro Ltd', 'price': 445.60, 'change': -3.20, 'changePercent': -0.71},
+        {'ticker': 'LT.NS', 'name': 'Larsen & Toubro Ltd', 'price': 3267.40, 'change': 67.25, 'changePercent': 2.10},
+        {'ticker': 'AXISBANK.NS', 'name': 'Axis Bank Ltd', 'price': 1078.95, 'change': -15.30, 'changePercent': -1.40},
+        {'ticker': 'MARUTI.NS', 'name': 'Maruti Suzuki India Ltd', 'price': 10456.80, 'change': 123.50, 'changePercent': 1.20},
+        {'ticker': 'TATAMOTORS.NS', 'name': 'Tata Motors Ltd', 'price': 734.20, 'change': 56.80, 'changePercent': 8.39},
+        {'ticker': 'ADANIENT.NS', 'name': 'Adani Enterprises Ltd', 'price': 2234.55, 'change': -89.45, 'changePercent': -3.85},
+    ]
+    
+    results = []
+    for stock in sample_stocks:
+        change_pct = stock['changePercent']
+        avg_sentiment = min(100, max(-100, change_pct * 10))
+        confidence = min(95, 50 + abs(change_pct) * 3)
+        
+        if avg_sentiment > 30:
+            label = 'Bullish'
+        elif avg_sentiment < -30:
+            label = 'Bearish'
+        else:
+            label = 'Neutral'
+        
+        results.append({
+            'ticker': stock['ticker'],
+            'name': stock['name'],
+            'price': stock['price'],
+            'change': stock['change'],
+            'changePercent': stock['changePercent'],
+            'sentiment': round(avg_sentiment, 1),
+            'sentimentLabel': label,
+            'articleCount': 0,
+            'confidence': round(confidence, 1)
+        })
+    
+    return results
+
 @app.route('/api/trending', methods=['GET'])
 def get_trending():
     """Fetch trending stocks with quick sentiment analysis"""
@@ -1309,12 +1357,21 @@ def get_trending():
         conn.request('GET', '/trending', headers=headers)
         res = conn.getresponse()
         data = res.read()
+        data_str = data.decode('utf-8')
         
-        if res.status != 200:
-            print(f"Trending API error: Status {res.status}")
-            return jsonify({'error': 'Unable to fetch trending stocks'}), 500
+        # Check for rate limit error
+        if res.status != 200 or 'limit exceeded' in data_str.lower() or 'rate limit' in data_str.lower():
+            print(f"Trending API error: Status {res.status}, Response: {data_str[:200]}")
+            # Return sample trending data as fallback
+            return jsonify({
+                'trending': get_sample_trending_stocks(),
+                'timestamp': datetime.now().isoformat(),
+                'count': 15,
+                'demo': True,
+                'message': 'Using sample data (API rate limit reached)'
+            })
         
-        trending_stocks = json.loads(data.decode('utf-8'))
+        trending_stocks = json.loads(data_str)
 
         # Normalize response shape to a list
         trending_list = []
@@ -1360,33 +1417,14 @@ def get_trending():
                         return float(default)
                     return float(default)
 
-                # Fetch minimal news for sentiment (last 3 days, fewer articles)
-                articles = get_news_articles(ticker, days=3)
+                # Quick sentiment based on price movement (no heavy ML inference for trending)
+                # This makes the endpoint fast - detailed sentiment available via /api/analyze
+                change_pct = _to_float(stock.get('changePercent') or stock.get('%Change') or stock.get('percentChange') or stock.get('percent_change') or 0)
                 
-                if not articles:
-                    # No news = neutral sentiment
-                    results.append({
-                        'ticker': ticker,
-                        'name': stock.get('name', ticker),
-                        'price': stock.get('price', 0),
-                        'change': stock.get('change', 0),
-                        'changePercent': stock.get('changePercent', 0),
-                        'sentiment': 0,
-                        'sentimentLabel': 'Neutral',
-                        'articleCount': 0,
-                        'confidence': 50.0
-                    })
-                    continue
-                
-                # Quick sentiment calc (top 5 articles only for speed)
-                sentiments = []
-                for article in articles[:5]:
-                    text = f"{article.get('title', '')} {article.get('description', '')}"
-                    score, conf = analyze_sentiment_finbert(text)
-                    sentiments.append(score)
-                
-                avg_sentiment = np.mean(sentiments) if sentiments else 0
-                confidence = np.mean([abs(s) for s in sentiments]) if sentiments else 50.0
+                # Map price change to sentiment (-100 to 100)
+                # Large gains = bullish, large losses = bearish
+                avg_sentiment = min(100, max(-100, change_pct * 10))  # Scale: ±10% change = ±100 sentiment
+                confidence = min(95, 50 + abs(change_pct) * 3)  # Higher change = higher confidence
                 
                 # Determine label
                 if avg_sentiment > 30:
@@ -1404,7 +1442,7 @@ def get_trending():
                     'changePercent': _to_float(stock.get('changePercent') or stock.get('%Change') or stock.get('percentChange') or stock.get('percent_change') or 0),
                     'sentiment': round(avg_sentiment, 1),
                     'sentimentLabel': label,
-                    'articleCount': len(articles),
+                    'articleCount': 0,  # Not fetching articles for trending (use /api/analyze for detailed sentiment)
                     'confidence': round(confidence, 1)
                 })
                 

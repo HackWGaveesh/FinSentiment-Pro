@@ -197,7 +197,7 @@ const Dashboard: React.FC = () => {
               Enter a stock ticker to begin analysis
             </h3>
             <p className="text-slate-600 dark:text-slate-400">
-              Try popular tickers like AAPL, TSLA, GOOGL, MSFT, or AMZN
+              Try popular tickers like RELIANCE.NS, TCS.NS, HDFCBANK.NS, INFY.NS, or ICICIBANK.NS
             </p>
           </motion.div>
         )}
