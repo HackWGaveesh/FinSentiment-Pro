@@ -45,11 +45,34 @@ CACHE_DURATION = 300  # 5 minutes in seconds
 # Setting to False will try Alpha Vantage first, then yfinance, then fall back to sample data
 DEMO_MODE = os.environ.get('DEMO_MODE', 'false').lower() == 'true'  # Changed to 'false' for real data
 
-# API Keys - Load from environment variables
+# API Keys - Load from environment variables with rotation support
 NEWS_API_KEY = os.getenv('NEWS_API_KEY', 'your_newsapi_key_here')
 ALPHA_VANTAGE_KEY = os.getenv('ALPHA_VANTAGE_KEY', 'your_alphavantage_key_here')
 HF_API_KEY = os.getenv('HF_API_KEY', 'your_huggingface_key_here')
-INDIAN_STOCK_API_KEY = os.getenv('INDIAN_STOCK_API_KEY', 'your_indian_stock_api_key_here')
+
+# Indian Stock API Keys (multiple keys for rotation when rate limit hits)
+INDIAN_STOCK_API_KEYS = [
+    os.getenv('INDIAN_STOCK_API_KEY', 'your_indian_stock_api_key_here'),
+    os.getenv('INDIAN_STOCK_API_KEY_2', ''),
+    os.getenv('INDIAN_STOCK_API_KEY_3', ''),
+]
+# Filter out empty keys
+INDIAN_STOCK_API_KEYS = [k for k in INDIAN_STOCK_API_KEYS if k and k != 'your_indian_stock_api_key_here']
+CURRENT_API_KEY_INDEX = 0
+
+def get_next_indian_stock_api_key():
+    """Rotate to next API key when current one hits rate limit"""
+    global CURRENT_API_KEY_INDEX
+    if not INDIAN_STOCK_API_KEYS:
+        return None
+    
+    # Get current key
+    key = INDIAN_STOCK_API_KEYS[CURRENT_API_KEY_INDEX]
+    
+    # Rotate to next key for next call
+    CURRENT_API_KEY_INDEX = (CURRENT_API_KEY_INDEX + 1) % len(INDIAN_STOCK_API_KEYS)
+    
+    return key
 
 # Quick sanity log (masked) to help debug missing API keys without leaking secrets
 def _mask(s: str) -> str:
@@ -59,7 +82,9 @@ def _mask(s: str) -> str:
         return '****'
     return s[:4] + '...' + s[-4:]
 
-print(f"Config: INDIAN_STOCK_API_KEY={_mask(INDIAN_STOCK_API_KEY)} | DEMO_MODE={DEMO_MODE}")
+print(f"Config: Loaded {len(INDIAN_STOCK_API_KEYS)} API keys | DEMO_MODE={DEMO_MODE}")
+if INDIAN_STOCK_API_KEYS:
+    print(f"API Key 1: {_mask(INDIAN_STOCK_API_KEYS[0])}")
 
 # Initialize FinBERT model for sentiment analysis
 print("Loading FinBERT model...")
@@ -75,8 +100,12 @@ def get_indian_news_articles(days=7):
     try:
         import http.client
         
+        api_key = get_next_indian_stock_api_key()
+        if not api_key:
+            return []
+        
         conn = http.client.HTTPSConnection('stock.indianapi.in')
-        headers = {'x-api-key': INDIAN_STOCK_API_KEY}
+        headers = {'x-api-key': api_key}
         
         conn.request('GET', '/news', headers=headers)
         res = conn.getresponse()
@@ -147,8 +176,12 @@ def get_news_articles(ticker, days=7):
             # Extract stock symbol (remove .NS or .BO suffix)
             stock_symbol = ticker.replace('.NS', '').replace('.BO', '').replace('.BO.BO', '')
             
+            api_key = get_next_indian_stock_api_key()
+            if not api_key:
+                return []
+            
             conn = http.client.HTTPSConnection('stock.indianapi.in')
-            headers = {'x-api-key': INDIAN_STOCK_API_KEY}
+            headers = {'x-api-key': api_key}
             
             conn.request('GET', f'/stock?name={stock_symbol}', headers=headers)
             res = conn.getresponse()
@@ -294,8 +327,13 @@ def get_indian_stock_data(ticker, days=30):
         
         print(f"🇮🇳 Fetching Indian stock data for {stock_symbol} ({ticker})")
         
+        api_key = get_next_indian_stock_api_key()
+        if not api_key:
+            print("No Indian Stock API keys available")
+            return None
+        
         conn = http.client.HTTPSConnection('stock.indianapi.in')
-        headers = {'x-api-key': INDIAN_STOCK_API_KEY}
+        headers = {'x-api-key': api_key}
         
         conn.request('GET', f'/stock?name={stock_symbol}', headers=headers)
         res = conn.getresponse()
@@ -1344,15 +1382,102 @@ def get_sample_trending_stocks():
     
     return results
 
+def get_real_time_prices_yfinance():
+    """Fetch real-time prices from yfinance as fallback"""
+    popular_stocks = [
+        {'ticker': 'RELIANCE.NS', 'name': 'Reliance Industries Ltd'},
+        {'ticker': 'TCS.NS', 'name': 'Tata Consultancy Services'},
+        {'ticker': 'HDFCBANK.NS', 'name': 'HDFC Bank Ltd'},
+        {'ticker': 'INFY.NS', 'name': 'Infosys Ltd'},
+        {'ticker': 'ICICIBANK.NS', 'name': 'ICICI Bank Ltd'},
+        {'ticker': 'HINDUNILVR.NS', 'name': 'Hindustan Unilever Ltd'},
+        {'ticker': 'BHARTIARTL.NS', 'name': 'Bharti Airtel Ltd'},
+        {'ticker': 'ITC.NS', 'name': 'ITC Ltd'},
+        {'ticker': 'SBIN.NS', 'name': 'State Bank of India'},
+        {'ticker': 'WIPRO.NS', 'name': 'Wipro Ltd'},
+        {'ticker': 'LT.NS', 'name': 'Larsen & Toubro Ltd'},
+        {'ticker': 'AXISBANK.NS', 'name': 'Axis Bank Ltd'},
+        {'ticker': 'MARUTI.NS', 'name': 'Maruti Suzuki India Ltd'},
+        {'ticker': 'TATAMOTORS.NS', 'name': 'Tata Motors Ltd'},
+        {'ticker': 'ADANIENT.NS', 'name': 'Adani Enterprises Ltd'},
+    ]
+    
+    results = []
+    for stock_info in popular_stocks:
+        try:
+            ticker = stock_info['ticker']
+            stock = yf.Ticker(ticker)
+            
+            # Get current data
+            info = stock.info
+            hist = stock.history(period='2d')
+            
+            if len(hist) < 2:
+                continue
+                
+            current_price = hist['Close'].iloc[-1]
+            prev_price = hist['Close'].iloc[-2]
+            change = current_price - prev_price
+            change_pct = (change / prev_price) * 100
+            
+            # Calculate sentiment based on price movement
+            avg_sentiment = min(100, max(-100, change_pct * 10))
+            confidence = min(95, 50 + abs(change_pct) * 3)
+            
+            if avg_sentiment > 30:
+                label = 'Bullish'
+            elif avg_sentiment < -30:
+                label = 'Bearish'
+            else:
+                label = 'Neutral'
+            
+            results.append({
+                'ticker': ticker,
+                'name': stock_info['name'],
+                'price': round(current_price, 2),
+                'change': round(change, 2),
+                'changePercent': round(change_pct, 2),
+                'sentiment': round(avg_sentiment, 1),
+                'sentimentLabel': label,
+                'articleCount': 0,
+                'confidence': round(confidence, 1)
+            })
+        except Exception as e:
+            print(f"Error fetching {stock_info['ticker']}: {e}")
+            continue
+    
+    return results
+
 @app.route('/api/trending', methods=['GET'])
 def get_trending():
     """Fetch trending stocks with quick sentiment analysis"""
     try:
         import http.client
         
+        # Get next API key from rotation
+        api_key = get_next_indian_stock_api_key()
+        if not api_key:
+            print("No Indian Stock API keys available")
+            real_time_data = get_real_time_prices_yfinance()
+            if real_time_data:
+                return jsonify({
+                    'trending': real_time_data,
+                    'timestamp': datetime.now().isoformat(),
+                    'count': len(real_time_data),
+                    'demo': False,
+                    'message': 'Real-time data from Yahoo Finance'
+                })
+            return jsonify({
+                'trending': get_sample_trending_stocks(),
+                'timestamp': datetime.now().isoformat(),
+                'count': 15,
+                'demo': True,
+                'message': 'Using sample data (No API keys available)'
+            })
+        
         # Fetch trending stocks from Indian Stock API
         conn = http.client.HTTPSConnection('stock.indianapi.in')
-        headers = {'x-api-key': INDIAN_STOCK_API_KEY}
+        headers = {'x-api-key': api_key}
         
         conn.request('GET', '/trending', headers=headers)
         res = conn.getresponse()
@@ -1362,14 +1487,26 @@ def get_trending():
         # Check for rate limit error
         if res.status != 200 or 'limit exceeded' in data_str.lower() or 'rate limit' in data_str.lower():
             print(f"Trending API error: Status {res.status}, Response: {data_str[:200]}")
-            # Return sample trending data as fallback
-            return jsonify({
-                'trending': get_sample_trending_stocks(),
-                'timestamp': datetime.now().isoformat(),
-                'count': 15,
-                'demo': True,
-                'message': 'Using sample data (API rate limit reached)'
-            })
+            print("Fetching real-time prices from Yahoo Finance...")
+            # Fetch real-time data from yfinance
+            real_time_data = get_real_time_prices_yfinance()
+            if real_time_data:
+                return jsonify({
+                    'trending': real_time_data,
+                    'timestamp': datetime.now().isoformat(),
+                    'count': len(real_time_data),
+                    'demo': False,
+                    'message': 'Real-time data from Yahoo Finance'
+                })
+            else:
+                # Final fallback to sample data
+                return jsonify({
+                    'trending': get_sample_trending_stocks(),
+                    'timestamp': datetime.now().isoformat(),
+                    'count': 15,
+                    'demo': True,
+                    'message': 'Using sample data (API rate limit reached)'
+                })
         
         trending_stocks = json.loads(data_str)
 
@@ -1402,7 +1539,8 @@ def get_trending():
         for stock in trending_list[:15]:  # Limit to top 15
             try:
                 # Normalize field names from different possible shapes
-                ticker = stock.get('symbol') or stock.get('ticker') or stock.get('code') or stock.get('ric') or ''
+                # Note: Indian Stock API returns 'ric' field with exchange ticker (e.g., BAJE.NS)
+                ticker = stock.get('ric') or stock.get('symbol') or stock.get('ticker') or stock.get('code') or ''
                 if not ticker:
                     continue
                 
@@ -1436,10 +1574,10 @@ def get_trending():
                 
                 results.append({
                     'ticker': ticker,
-                    'name': stock.get('name') or stock.get('companyName') or stock.get('company_name') or ticker,
+                    'name': stock.get('company_name') or stock.get('name') or stock.get('companyName') or ticker,
                     'price': _to_float(stock.get('price') or stock.get('ltp') or stock.get('LTP') or 0),
-                    'change': _to_float(stock.get('change') or stock.get('netChange') or stock.get('net_change') or 0),
-                    'changePercent': _to_float(stock.get('changePercent') or stock.get('%Change') or stock.get('percentChange') or stock.get('percent_change') or 0),
+                    'change': _to_float(stock.get('net_change') or stock.get('change') or stock.get('netChange') or 0),
+                    'changePercent': _to_float(stock.get('percent_change') or stock.get('changePercent') or stock.get('%Change') or stock.get('percentChange') or 0),
                     'sentiment': round(avg_sentiment, 1),
                     'sentimentLabel': label,
                     'articleCount': 0,  # Not fetching articles for trending (use /api/analyze for detailed sentiment)
@@ -1447,7 +1585,7 @@ def get_trending():
                 })
                 
             except Exception as stock_error:
-                print(f"Error processing trending stock {stock.get('symbol', 'unknown')}: {stock_error}")
+                print(f"Error processing trending stock {stock.get('ric', 'unknown')}: {stock_error}")
                 continue
         
         return jsonify({
