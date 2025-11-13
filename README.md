@@ -85,7 +85,7 @@ Real-time sentiment tracking • FinBERT NLP • Beautiful visualizations • Pr
 [![Python](https://img.shields.io/badge/Python-3.8+-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
-[🚀 Quick Start](#-quick-start) • [📖 Documentation](#-features) • [🐛 Report Bug](https://github.com/HackWGaveesh/FinSentiment-Pro/issues) • [✨ Request Feature](https://github.com/HackWGaveesh/FinSentiment-Pro/issues)
+[🚀 Quick Deploy](./QUICKDEPLOY.md) • [📖 Full Guide](./DEPLOYMENT.md) • [🐛 Report Bug](https://github.com/HackWGaveesh/FinSentiment-Pro/issues) • [✨ Request Feature](https://github.com/HackWGaveesh/FinSentiment-Pro/issues)
 
 </div>
 
