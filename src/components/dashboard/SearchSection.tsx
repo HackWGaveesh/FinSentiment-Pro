@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Mic, X, Loader2, Calendar, TrendingUp } from 'lucide-react';
 import { useStore } from '@/store/useStore';
 import axios from 'axios';
+import { API_ENDPOINTS } from '@/config/api';
 
 const POPULAR_TICKERS = ['RELIANCE.NS', 'TCS.NS', 'HDFCBANK.NS', 'INFY.NS', 'ICICIBANK.NS', 'HINDUNILVR.NS', 'BHARTIARTL.NS', 'SBIN.NS'];
 
@@ -45,7 +46,7 @@ const SearchSection: React.FC = () => {
 
     setIsSearching(true);
     try {
-      const response = await axios.get(`http://localhost:5000/api/search?q=${encodeURIComponent(query)}&limit=8`);
+      const response = await axios.get(`${API_ENDPOINTS.search}?q=${encodeURIComponent(query)}&limit=8`);
       setSuggestions(response.data);
       setShowSuggestions(response.data.length > 0);
     } catch (error) {
@@ -150,7 +151,7 @@ const SearchSection: React.FC = () => {
       const daysMap = { '24h': 1, '7d': 7, '30d': 30, '365d': 365 };
       const days = daysMap[dateRange];
 
-      const response = await axios.post('http://localhost:5000/api/analyze', {
+      const response = await axios.post(API_ENDPOINTS.analyze, {
         ticker: upperTicker,
         days,
       });

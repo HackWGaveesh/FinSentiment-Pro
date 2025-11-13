@@ -25,7 +25,20 @@ except Exception:
     pass
 
 app = Flask(__name__)
-CORS(app)
+
+# CORS configuration - allow Vercel and Render domains plus localhost
+CORS(app, resources={
+    r"/api/*": {
+        "origins": [
+            "http://localhost:3000",
+            "http://localhost:5173",
+            "https://*.vercel.app",
+            "https://*.render.com"
+        ],
+        "methods": ["GET", "POST", "OPTIONS"],
+        "allow_headers": ["Content-Type"]
+    }
+})
 
 # Load stock database
 STOCK_DATABASE = []

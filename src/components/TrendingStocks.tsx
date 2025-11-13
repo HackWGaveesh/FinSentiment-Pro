@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { TrendingUp, TrendingDown, Minus, RefreshCw, Filter, ArrowUpDown, Activity } from 'lucide-react';
 import axios from 'axios';
 import { useStore } from '@/store/useStore';
+import { API_ENDPOINTS } from '@/config/api';
 
 interface TrendingStock {
   ticker: string;
@@ -40,7 +41,7 @@ const TrendingStocks: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.get<TrendingResponse>('http://localhost:5000/api/trending');
+      const response = await axios.get<TrendingResponse>(API_ENDPOINTS.trending);
       setTrending(response.data.trending);
       setFilteredTrending(response.data.trending);
       setLastUpdate(new Date(response.data.timestamp).toLocaleTimeString());
@@ -92,7 +93,7 @@ const TrendingStocks: React.FC = () => {
     dashboard?.scrollIntoView({ behavior: 'smooth' });
 
     try {
-      const response = await axios.post('http://localhost:5000/api/analyze', {
+      const response = await axios.post(API_ENDPOINTS.analyze, {
         ticker: stock.ticker,
         days: 7,
       });
