@@ -1,10 +1,80 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Brain, Mic, LineChart, Sparkles, Search, TrendingUp, ArrowRight } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Brain, Mic, LineChart, Sparkles, Search, TrendingUp, ArrowRight, X, Loader2 } from 'lucide-react';
+import axios from 'axios';
+import { API_ENDPOINTS } from '@/config/api';
+
+interface StockSuggestion {
+  name: string;
+  ticker: string;
+  exchange: string;
+  country: string;
+}
 
 const Hero: React.FC = () => {
   const [quickTicker, setQuickTicker] = useState('');
+  const [suggestions, setSuggestions] = useState<StockSuggestion[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const suggestionsRef = useRef<HTMLDivElement>(null);
   
+  // Search for stocks in database
+  const searchStocks = async (query: string) => {
+    if (!query || query.length < 1) {
+      setSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+
+    setIsSearching(true);
+    try {
+      const response = await axios.get(`${API_ENDPOINTS.search}?q=${encodeURIComponent(query)}&limit=8`);
+      setSuggestions(response.data);
+      setShowSuggestions(response.data.length > 0);
+    } catch (error) {
+      console.error('Search error:', error);
+      setSuggestions([]);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  // Handle input change with debounce
+  const handleInputChange = (value: string) => {
+    const upperValue = value.toUpperCase();
+    setQuickTicker(upperValue);
+
+    // Clear existing timeout
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+
+    // Debounce search
+    searchTimeoutRef.current = setTimeout(() => {
+      searchStocks(value);
+    }, 300);
+  };
+
+  // Select suggestion
+  const handleSelectSuggestion = (suggestion: StockSuggestion) => {
+    setQuickTicker(suggestion.ticker);
+    setSuggestions([]);
+    setShowSuggestions(false);
+  };
+
+  // Click outside to close suggestions
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (suggestionsRef.current && !suggestionsRef.current.contains(event.target as Node)) {
+        setShowSuggestions(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const scrollToDashboard = () => {
     const dashboard = document.querySelector('#dashboard');
     dashboard?.scrollIntoView({ behavior: 'smooth' });
@@ -17,6 +87,8 @@ const Hero: React.FC = () => {
 
   const handleQuickSearch = (ticker: string) => {
     setQuickTicker(ticker);
+    setSuggestions([]);
+    setShowSuggestions(false);
     scrollToDashboard();
     // Trigger search after scroll
     setTimeout(() => {
@@ -115,31 +187,94 @@ const Hero: React.FC = () => {
             Get instant insights on any stock's market mood.
           </motion.p>
 
-          {/* Quick Search */}
+          {/* Quick Search with Autocomplete */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 0.6 }}
             className="max-w-2xl mx-auto mb-6"
           >
-            <div className="relative">
-              <input
-                type="text"
-                value={quickTicker}
-                onChange={(e) => setQuickTicker(e.target.value.toUpperCase())}
-                onKeyPress={(e) => e.key === 'Enter' && quickTicker && handleQuickSearch(quickTicker)}
-                placeholder="Enter stock ticker (e.g., RELIANCE.NS, TCS.NS, INFY.NS)..."
-                className="w-full pl-12 pr-32 py-4 text-lg rounded-2xl bg-white dark:bg-dark-card border-2 border-slate-200 dark:border-slate-700 focus:border-indigo-500 dark:focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20 transition-all shadow-lg"
-              />
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-6 h-6 text-slate-400" />
-              <button
-                onClick={() => quickTicker && handleQuickSearch(quickTicker)}
-                disabled={!quickTicker}
-                className="absolute right-2 top-1/2 -translate-y-1/2 px-6 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Analyze
-              </button>
+            <div className="relative" ref={suggestionsRef}>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={quickTicker}
+                  onChange={(e) => handleInputChange(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && quickTicker && handleQuickSearch(quickTicker)}
+                  onFocus={() => {
+                    if (suggestions.length > 0) setShowSuggestions(true);
+                  }}
+                  placeholder="Search by company name or ticker (e.g., Reliance, TCS, HDFC)..."
+                  className="w-full pl-12 pr-32 py-4 text-lg rounded-2xl bg-white dark:bg-dark-card border-2 border-slate-200 dark:border-slate-700 focus:border-indigo-500 dark:focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20 transition-all shadow-lg"
+                  autoComplete="off"
+                />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-6 h-6 text-slate-400" />
+                {isSearching && (
+                  <div className="absolute right-32 top-1/2 -translate-y-1/2">
+                    <Loader2 className="w-5 h-5 animate-spin text-indigo-500" />
+                  </div>
+                )}
+                {quickTicker && (
+                  <button
+                    onClick={() => {
+                      setQuickTicker('');
+                      setSuggestions([]);
+                      setShowSuggestions(false);
+                    }}
+                    className="absolute right-32 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                )}
+                <button
+                  onClick={() => quickTicker && handleQuickSearch(quickTicker)}
+                  disabled={!quickTicker}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 px-6 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Analyze
+                </button>
+              </div>
+
+              {/* Autocomplete Suggestions Dropdown */}
+              <AnimatePresence>
+                {showSuggestions && suggestions.length > 0 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="absolute z-50 w-full mt-2 bg-white dark:bg-dark-card border border-light-border dark:border-dark-border rounded-xl shadow-2xl max-h-80 overflow-y-auto"
+                  >
+                    {suggestions.map((suggestion, index) => (
+                      <motion.button
+                        key={`${suggestion.ticker}-${index}`}
+                        whileHover={{ backgroundColor: 'rgba(99, 102, 241, 0.1)' }}
+                        onClick={() => handleSelectSuggestion(suggestion)}
+                        className="w-full px-4 py-3 text-left hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors border-b border-light-border dark:border-dark-border last:border-b-0 first:rounded-t-xl last:rounded-b-xl"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1">
+                            <div className="font-semibold text-slate-900 dark:text-slate-100">
+                              {suggestion.name}
+                            </div>
+                            <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-2 mt-1">
+                              <span className="font-mono font-bold text-indigo-600 dark:text-indigo-400">
+                                {suggestion.ticker}
+                              </span>
+                              <span>•</span>
+                              <span>{suggestion.exchange}</span>
+                              <span>•</span>
+                              <span>{suggestion.country}</span>
+                            </div>
+                          </div>
+                          <TrendingUp className="w-5 h-5 text-indigo-400" />
+                        </div>
+                      </motion.button>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
+
             <p className="text-sm text-slate-500 dark:text-slate-400 mt-3">
               Try these: {popularStocks.slice(0, 5).map((stock, i) => (
                 <button

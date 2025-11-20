@@ -1,312 +1,622 @@
-# 🚀 FinSentiment Pro - AI-Powered Stock Market Sentiment Analysis# FinSentiment Pro - AI-Powered Financial Sentiment Analysis
+<div align="center"># 🚀 FinSentiment Pro - AI-Powered Stock Market Sentiment Analysis# FinSentiment Pro - AI-Powered Financial Sentiment Analysis
 
 
 
-<div align="center">A premium, production-ready Financial Sentiment Analysis web application with real-time multi-dimensional sentiment tracking for stock market intelligence.
+# 📈 FinSentiment Pro
 
 
 
-![FinSentiment Pro](https://img.shields.io/badge/FinSentiment-Pro-6366F1?style=for-the-badge)## 🚀 Features
+### *AI-Powered Financial Sentiment Analysis Platform*<div align="center">A premium, production-ready Financial Sentiment Analysis web application with real-time multi-dimensional sentiment tracking for stock market intelligence.
 
-![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
 
-![React](https://img.shields.io/badge/React-18.3-61DAFB?style=for-the-badge&logo=react)- **Multi-Model AI**: FinBERT sentiment analysis + emotion detection
 
-![Python](https://img.shields.io/badge/Python-3.8+-3776AB?style=for-the-badge&logo=python)- **Voice Input**: Speak stock tickers using Web Speech API
+[![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://www.python.org/downloads/)
 
-![TypeScript](https://img.shields.io/badge/TypeScript-5.5-3178C6?style=for-the-badge&logo=typescript)- **Real-Time Data**: Live news from News API and stock prices from Yahoo Finance
+[![React](https://img.shields.io/badge/React-18.3.1-61dafb.svg)](https://reactjs.org/)
 
-- **Interactive Dashboards**: 
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.5+-blue.svg)](https://www.typescriptlang.org/)![FinSentiment Pro](https://img.shields.io/badge/FinSentiment-Pro-6366F1?style=for-the-badge)## 🚀 Features
 
-**Real-time AI-powered sentiment analysis platform for Indian stocks using FinBERT NLP and advanced visualization**  - Overall Sentiment Gauge
+[![Flask](https://img.shields.io/badge/Flask-3.0.0-black.svg)](https://flask.palletsprojects.com/)
 
-  - Timeline Charts (Sentiment + Price correlation)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
 
-[🌐 Live Demo](#) | [📖 Documentation](#features) | [🐛 Report Bug](https://github.com/HackWGaveesh/FinSentiment-Pro/issues) | [✨ Request Feature](https://github.com/HackWGaveesh/FinSentiment-Pro/issues)  - Multi-dimensional Radar Charts
 
-  - Source Comparison
 
-</div>  - Calendar Heatmap
+**Real-time sentiment analysis for 2,796+ stocks using FinBERT & Advanced NLP**![React](https://img.shields.io/badge/React-18.3-61DAFB?style=for-the-badge&logo=react)- **Multi-Model AI**: FinBERT sentiment analysis + emotion detection
 
-  - Correlation Scatter Plots
+
+
+</div>![Python](https://img.shields.io/badge/Python-3.8+-3776AB?style=for-the-badge&logo=python)- **Voice Input**: Speak stock tickers using Web Speech API
+
+
+
+---![TypeScript](https://img.shields.io/badge/TypeScript-5.5-3178C6?style=for-the-badge&logo=typescript)- **Real-Time Data**: Live news from News API and stock prices from Yahoo Finance
+
+
+
+## 🌟 Overview- **Interactive Dashboards**: 
+
+
+
+**FinSentiment Pro** is a production-ready financial sentiment analysis platform that leverages cutting-edge NLP and Machine Learning to analyze news articles in real-time, providing actionable insights for traders and investors.**Real-time AI-powered sentiment analysis platform for Indian stocks using FinBERT NLP and advanced visualization**  - Overall Sentiment Gauge
+
+
+
+### 🎯 Key Highlights  - Timeline Charts (Sentiment + Price correlation)
+
+
+
+- 🧠 **FinBERT AI**: ProsusAI's FinBERT model trained specifically on financial texts[🌐 Live Demo](#) | [📖 Documentation](#features) | [🐛 Report Bug](https://github.com/HackWGaveesh/FinSentiment-Pro/issues) | [✨ Request Feature](https://github.com/HackWGaveesh/FinSentiment-Pro/issues)  - Multi-dimensional Radar Charts
+
+- 📊 **2,796+ Stocks**: Indian (NSE/BSE) & International markets coverage
+
+- ⚡ **Real-Time**: Live sentiment tracking from multiple news sources  - Source Comparison
+
+- 🎨 **Beautiful UI**: Modern, responsive design with dark mode
+
+- 🔍 **Smart Search**: Intelligent autocomplete with instant results</div>  - Calendar Heatmap
+
+- 📈 **Visual Analytics**: Interactive charts, heatmaps, radar plots
+
+- 🌐 **Multi-Source**: NewsAPI, Alpha Vantage, Indian Stock APIs  - Correlation Scatter Plots
+
+- 🚀 **GPU Ready**: CUDA-optimized for fast inference
 
 ---  - AI-Generated Insights
 
+---
+
 - **Dark/Light Theme**: Smooth theme transitions with localStorage persistence
+
+## ✨ Features
 
 ## 📋 Table of Contents- **Responsive Design**: Works perfectly on mobile, tablet, and desktop
 
+### 🔥 Core Capabilities
+
 - **Accessibility**: WCAG 2.1 AA compliant
 
-- [Overview](#-overview)- **Performance Optimized**: Lazy loading, code splitting, memoization
+| Feature | Description |
 
-- [Features](#-features)
+|---------|-------------|- [Overview](#-overview)- **Performance Optimized**: Lazy loading, code splitting, memoization
 
-- [Tech Stack](#-tech-stack)## 📋 Prerequisites
+| **Multi-Model AI** | FinBERT sentiment + Emotion detection |
 
-- [Installation](#-installation)
+| **Voice Search** | Speak stock tickers hands-free |- [Features](#-features)
+
+| **Live Data** | Real-time news & price correlation |
+
+| **Advanced Charts** | Timeline, heatmaps, scatter, radar |- [Tech Stack](#-tech-stack)## 📋 Prerequisites
+
+| **Multi-Dimensional** | 6+ sentiment dimensions analyzed |
+
+| **Export Reports** | PDF/JSON/CSV downloads |- [Installation](#-installation)
+
+| **Dark Mode** | Eye-friendly theme with smooth transitions |
 
 - [Configuration](#-configuration)- **Node.js** (v18 or higher)
 
+### 📊 Analysis Dimensions
+
 - [Usage](#-usage)- **Python** (v3.8 or higher)
 
-- [API Endpoints](#-api-endpoints)- **pip** (Python package manager)
+- **Market Sentiment**: Overall market mood score
 
-- [Project Structure](#-project-structure)
+- **Emotional Tone**: Joy, fear, anger detection  - [API Endpoints](#-api-endpoints)- **pip** (Python package manager)
 
-- [Contributing](#-contributing)## 🛠️ Installation
+- **Uncertainty Index**: Market volatility indicator
 
-- [License](#-license)
+- **Urgency Score**: Breaking news impact- [Project Structure](#-project-structure)
 
-### 1. Install Frontend Dependencies
+- **Future Outlook**: Predictive sentiment trend
 
----
+- **Risk Assessment**: Comprehensive risk analysis- [Contributing](#-contributing)## 🛠️ Installation
 
-```powershell
 
-## 🌟 Overviewnpm install
 
-```
+---- [License](#-license)
 
-<div align="center">
 
-![FinSentiment Pro Banner](https://via.placeholder.com/1200x300/6366F1/FFFFFF?text=FinSentiment+Pro+-+AI-Powered+Stock+Sentiment+Analytics)
 
-# 📊 FinSentiment Pro
+## 🛠️ Tech Stack### 1. Install Frontend Dependencies
 
-### *AI-Powered Financial Sentiment Analysis for Indian Stock Markets*
+
+
+**Frontend**: React 18.3 • TypeScript 5.5 • Vite • TailwindCSS • Framer Motion • Recharts---
+
+
+
+**Backend**: Python 3.10 • Flask 3.0 • FinBERT • PyTorch • Transformers • yfinance```powershell
+
+
+
+**AI Models**: ProsusAI/finbert • j-hartmann/emotion-english-distilroberta-base## 🌟 Overviewnpm install
+
+
+
+---```
+
+
+
+## 🚀 Quick Start<div align="center">
+
+
+
+### Prerequisites![FinSentiment Pro Banner](https://via.placeholder.com/1200x300/6366F1/FFFFFF?text=FinSentiment+Pro+-+AI-Powered+Stock+Sentiment+Analytics)
+
+
+
+- Python 3.10+# 📊 FinSentiment Pro
+
+- Node.js 18+
+
+- Git### *AI-Powered Financial Sentiment Analysis for Indian Stock Markets*
+
+- (Optional) CUDA 11.8+ for GPU acceleration
 
 Real-time sentiment tracking • FinBERT NLP • Beautiful visualizations • Production-ready
 
+### Installation
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-success.svg?style=flat-square)](LICENSE)
-[![React](https://img.shields.io/badge/React-18.3-61DAFB?style=flat-square&logo=react&logoColor=white)](https://reactjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.5-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Flask](https://img.shields.io/badge/Flask-3.0-000000?style=flat-square&logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
-[![Python](https://img.shields.io/badge/Python-3.8+-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
-[🚀 Quick Deploy](./QUICKDEPLOY.md) • [📖 Full Guide](./DEPLOYMENT.md) • [🐛 Report Bug](https://github.com/HackWGaveesh/FinSentiment-Pro/issues) • [✨ Request Feature](https://github.com/HackWGaveesh/FinSentiment-Pro/issues)
+**1. Clone Repository**[![React](https://img.shields.io/badge/React-18.3-61DAFB?style=flat-square&logo=react&logoColor=white)](https://reactjs.org/)
 
-</div>
+```bash[![TypeScript](https://img.shields.io/badge/TypeScript-5.5-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 
----
+git clone https://github.com/HackWGaveesh/FinSentiment-Pro.git[![Flask](https://img.shields.io/badge/Flask-3.0-000000?style=flat-square&logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
 
-## 🌟 Overview
+cd FinSentiment-Pro[![Python](https://img.shields.io/badge/Python-3.8+-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
 
-**FinSentiment Pro** is an enterprise-grade sentiment analysis platform that combines cutting-edge AI with real-time market data to deliver actionable insights for Indian stocks (NSE). Built with modern web technologies and powered by FinBERT NLP, it transforms raw financial news into clear sentiment signals.
+```[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
-### ✨ Why FinSentiment Pro?
 
-- 🎯 **Accurate**: FinBERT model fine-tuned specifically for financial sentiment
+
+**2. Backend Setup**[🚀 Quick Deploy](./QUICKDEPLOY.md) • [📖 Full Guide](./DEPLOYMENT.md) • [🐛 Report Bug](https://github.com/HackWGaveesh/FinSentiment-Pro/issues) • [✨ Request Feature](https://github.com/HackWGaveesh/FinSentiment-Pro/issues)
+
+```bash
+
+conda create -n finsentiment python=3.10 -y</div>
+
+conda activate finsentiment
+
+cd backend---
+
+pip install -r requirements.txt
+
+```## 🌟 Overview
+
+
+
+**3. Frontend Setup****FinSentiment Pro** is an enterprise-grade sentiment analysis platform that combines cutting-edge AI with real-time market data to deliver actionable insights for Indian stocks (NSE). Built with modern web technologies and powered by FinBERT NLP, it transforms raw financial news into clear sentiment signals.
+
+```bash
+
+cd ..### ✨ Why FinSentiment Pro?
+
+npm install
+
+```- 🎯 **Accurate**: FinBERT model fine-tuned specifically for financial sentiment
+
 - ⚡ **Fast**: Real-time trending stocks with sub-second analysis
-- 🎨 **Beautiful**: Modern glassmorphism UI with dark mode support
+
+**4. Configure Environment**- 🎨 **Beautiful**: Modern glassmorphism UI with dark mode support
+
 - 🛡️ **Resilient**: Smart API rotation and automatic fallback mechanisms
-- 📱 **Responsive**: Perfect experience across desktop, tablet, and mobile
-- 🔧 **Production-Ready**: Comprehensive error handling and caching
 
----
+Create `backend/.env`:- 📱 **Responsive**: Perfect experience across desktop, tablet, and mobile
 
-## 🎯 Features
+```env- 🔧 **Production-Ready**: Comprehensive error handling and caching
 
-<table>
+NEWS_API_KEY=your_newsapi_key
+
+ALPHA_VANTAGE_KEY=your_alphavantage_key---
+
+HF_API_KEY=your_huggingface_key
+
+INDIAN_STOCK_API_KEY=your_indian_stock_key## 🎯 Features
+
+DEMO_MODE=false
+
+```<table>
+
 <tr>
-<td width="50%">
 
-### 🤖 AI-Powered Analysis
-- **FinBERT Sentiment Scoring** (-100 to +100)
-- **Confidence Metrics** for each prediction
-- **Multi-dimensional Analysis** (6 key metrics)
-- **Emotion Detection** (joy, fear, anger, surprise)
-- **Source-Level Breakdown** with article counts
+**5. Run Application**<td width="50%">
 
-</td>
-<td width="50%">
 
-### 📊 Rich Visualizations
+
+Terminal 1 (Backend):### 🤖 AI-Powered Analysis
+
+```bash- **FinBERT Sentiment Scoring** (-100 to +100)
+
+cd backend- **Confidence Metrics** for each prediction
+
+conda activate finsentiment- **Multi-dimensional Analysis** (6 key metrics)
+
+python app.py- **Emotion Detection** (joy, fear, anger, surprise)
+
+```- **Source-Level Breakdown** with article counts
+
+
+
+Terminal 2 (Frontend):</td>
+
+```bash<td width="50%">
+
+npm run dev
+
+```### 📊 Rich Visualizations
+
 - **Overall Sentiment Gauge** (animated)
-- **Timeline Charts** (sentiment + price correlation)
+
+Open: **http://localhost:3000** 🎉- **Timeline Charts** (sentiment + price correlation)
+
 - **Radar Charts** (multi-dimensional view)
-- **Calendar Heatmaps** (historical trends)
+
+---- **Calendar Heatmaps** (historical trends)
+
 - **Scatter Plots** (correlation analysis)
-- **Source Comparison** (news provider breakdown)
 
-</td>
-</tr>
-<tr>
-<td width="50%">
+## 📖 Usage- **Source Comparison** (news provider breakdown)
 
-### 🔥 Real-Time Market Data
+
+
+### Basic Search</td>
+
+1. Type company name/ticker in search box</tr>
+
+2. Select from autocomplete suggestions<tr>
+
+3. Choose time period (24h, 7d, 30d, 1y)<td width="50%">
+
+4. Click "Analyze"
+
+5. View comprehensive sentiment dashboard### 🔥 Real-Time Market Data
+
 - **Live Trending Stocks** (top gainers/losers)
-- **NSE Integration** (RELIANCE.NS, TCS.NS, etc.)
-- **Price Updates** via Yahoo Finance
-- **Smart API Rotation** (3-key pool)
-- **Automatic Fallbacks** for resilience
 
-</td>
+### Voice Search- **NSE Integration** (RELIANCE.NS, TCS.NS, etc.)
+
+1. Click microphone icon- **Price Updates** via Yahoo Finance
+
+2. Say stock ticker- **Smart API Rotation** (3-key pool)
+
+3. Confirm & analyze- **Automatic Fallbacks** for resilience
+
+
+
+---</td>
+
 <td width="50%">
+
+## 📊 API Documentation
 
 ### 🎨 Premium User Experience
-- **Glassmorphism Design** (modern aesthetic)
-- **Dark/Light Mode** with smooth transitions
-- **Voice Input** (Web Speech API)
-- **Keyboard Shortcuts** for power users
-- **Responsive Layout** (mobile-first)
-- **Skeleton Loaders** for perceived speed
 
-</td>
-</tr>
-</table>
+### Endpoints- **Glassmorphism Design** (modern aesthetic)
+
+- **Dark/Light Mode** with smooth transitions
+
+**Health Check**- **Voice Input** (Web Speech API)
+
+```http- **Keyboard Shortcuts** for power users
+
+GET /api/health- **Responsive Layout** (mobile-first)
+
+```- **Skeleton Loaders** for perceived speed
+
+
+
+**Search Stocks**</td>
+
+```http</tr>
+
+GET /api/search?q={query}&limit={limit}</table>
+
+```
 
 ---
 
-## 🏗️ Architecture
+**Analyze Sentiment**
 
-```mermaid
+```http## 🏗️ Architecture
+
+POST /api/analyze
+
+Content-Type: application/json```mermaid
+
 graph TB
-    subgraph Frontend["🎨 Frontend (React + Vite)"]
-        UI[User Interface]
-        Store[Zustand State]
-        Charts[Recharts Visualizations]
-    end
-    
-    subgraph Backend["⚙️ Backend (Flask API)"]
-        API[REST Endpoints]
-        NLP[FinBERT Engine]
-        Cache[In-Memory Cache]
-        Rotation[API Key Rotation]
-    end
-    
-    subgraph External["🌐 External Services"]
-        IndianAPI[Indian Stock API]
-        YFinance[Yahoo Finance]
-        NewsAPI[News API]
-    end
-    
-    UI -->|HTTP Requests| API
-    API --> NLP
-    API --> Cache
-    API --> Rotation
-    Rotation -->|Primary| IndianAPI
-    Rotation -->|Fallback| YFinance
-    API -->|News Data| NewsAPI
-    
-    style Frontend fill:#61DAFB,stroke:#333,stroke-width:2px,color:#000
-    style Backend fill:#6366F1,stroke:#333,stroke-width:2px,color:#fff
-    style External fill:#10b981,stroke:#333,stroke-width:2px,color:#fff
-```
 
-### 🔄 Resilience Strategy
+{    subgraph Frontend["🎨 Frontend (React + Vite)"]
+
+  "ticker": "RELIANCE.NS",        UI[User Interface]
+
+  "days": 7        Store[Zustand State]
+
+}        Charts[Recharts Visualizations]
+
+```    end
+
+    
+
+**Trending Stocks**    subgraph Backend["⚙️ Backend (Flask API)"]
+
+```http        API[REST Endpoints]
+
+GET /api/trending        NLP[FinBERT Engine]
+
+```        Cache[In-Memory Cache]
+
+        Rotation[API Key Rotation]
+
+---    end
+
+    
+
+## 🏗️ Project Structure    subgraph External["🌐 External Services"]
+
+        IndianAPI[Indian Stock API]
+
+```        YFinance[Yahoo Finance]
+
+FinSentiment-Pro/        NewsAPI[News API]
+
+├── backend/    end
+
+│   ├── app.py                 # Flask API    
+
+│   ├── requirements.txt       # Python deps    UI -->|HTTP Requests| API
+
+│   ├── stock_database.json    # 2,796 stocks    API --> NLP
+
+│   └── .env                   # API keys    API --> Cache
+
+├── src/    API --> Rotation
+
+│   ├── components/    Rotation -->|Primary| IndianAPI
+
+│   │   ├── Hero.tsx           # Homepage with search    Rotation -->|Fallback| YFinance
+
+│   │   ├── Dashboard.tsx      # Analysis dashboard    API -->|News Data| NewsAPI
+
+│   │   └── dashboard/         # Dashboard components    
+
+│   ├── store/                 # State management    style Frontend fill:#61DAFB,stroke:#333,stroke-width:2px,color:#000
+
+│   ├── config/                # Configuration    style Backend fill:#6366F1,stroke:#333,stroke-width:2px,color:#fff
+
+│   └── types/                 # TypeScript types    style External fill:#10b981,stroke:#333,stroke-width:2px,color:#fff
+
+├── package.json```
+
+├── vite.config.ts
+
+└── README.md### 🔄 Resilience Strategy
+
+```
 
 1. **Primary**: Indian Stock API (3-key rotation pool)
-2. **Fallback 1**: Yahoo Finance (yfinance) for live prices
+
+---2. **Fallback 1**: Yahoo Finance (yfinance) for live prices
+
 3. **Fallback 2**: Curated sample data (always available)
-4. **Caching**: 5-minute cache for analyzed stocks
+
+## 🚀 Deployment4. **Caching**: 5-minute cache for analyzed stocks
+
 5. **Error Handling**: Graceful degradation at every layer
 
----
+**Docker**
 
-## 🛠️ Tech Stack
+```bash---
 
-<table>
+docker-compose up -d
+
+```## 🛠️ Tech Stack
+
+
+
+**Manual**<table>
+
+```bash<tr>
+
+# Backend<th>Category</th>
+
+cd backend<th>Technologies</th>
+
+gunicorn -w 4 -b 0.0.0.0:5000 app:app</tr>
+
 <tr>
-<th>Category</th>
-<th>Technologies</th>
-</tr>
-<tr>
-<td><strong>Frontend</strong></td>
-<td>
-<img src="https://img.shields.io/badge/React-18.3-61DAFB?logo=react&logoColor=white" />
-<img src="https://img.shields.io/badge/TypeScript-5.5-3178C6?logo=typescript&logoColor=white" />
+
+# Frontend<td><strong>Frontend</strong></td>
+
+npm run build<td>
+
+# Serve 'dist' folder<img src="https://img.shields.io/badge/React-18.3-61DAFB?logo=react&logoColor=white" />
+
+```<img src="https://img.shields.io/badge/TypeScript-5.5-3178C6?logo=typescript&logoColor=white" />
+
 <img src="https://img.shields.io/badge/Vite-5.4-646CFF?logo=vite&logoColor=white" />
-<img src="https://img.shields.io/badge/Tailwind-3.4-38B2AC?logo=tailwindcss&logoColor=white" />
+
+---<img src="https://img.shields.io/badge/Tailwind-3.4-38B2AC?logo=tailwindcss&logoColor=white" />
+
 <img src="https://img.shields.io/badge/Framer_Motion-11.5-BC4E9C" />
-<img src="https://img.shields.io/badge/Recharts-2.12-22B5BF" />
+
+## 📈 Performance<img src="https://img.shields.io/badge/Recharts-2.12-22B5BF" />
+
 <img src="https://img.shields.io/badge/Zustand-4.5-764ABC" />
-</td>
-</tr>
-<tr>
-<td><strong>Backend</strong></td>
-<td>
-<img src="https://img.shields.io/badge/Python-3.8+-3776AB?logo=python&logoColor=white" />
-<img src="https://img.shields.io/badge/Flask-3.0-000000?logo=flask&logoColor=white" />
+
+| Metric | Value |</td>
+
+|--------|-------|</tr>
+
+| Search Latency | <100ms |<tr>
+
+| Analysis Time | 2-5 seconds |<td><strong>Backend</strong></td>
+
+| Database Size | 2,796 stocks |<td>
+
+| News Sources | 10+ providers |<img src="https://img.shields.io/badge/Python-3.8+-3776AB?logo=python&logoColor=white" />
+
+| GPU Speedup | 10-15x faster |<img src="https://img.shields.io/badge/Flask-3.0-000000?logo=flask&logoColor=white" />
+
 <img src="https://img.shields.io/badge/FinBERT-ProsusAI-FF6F00" />
-<img src="https://img.shields.io/badge/Transformers-4.36-FF6F00?logo=huggingface&logoColor=white" />
+
+---<img src="https://img.shields.io/badge/Transformers-4.36-FF6F00?logo=huggingface&logoColor=white" />
+
 <img src="https://img.shields.io/badge/yfinance-0.2-blue" />
-<img src="https://img.shields.io/badge/NumPy-1.24-013243?logo=numpy&logoColor=white" />
+
+## 🤝 Contributing<img src="https://img.shields.io/badge/NumPy-1.24-013243?logo=numpy&logoColor=white" />
+
 </td>
-</tr>
+
+Contributions welcome! </tr>
+
 <tr>
-<td><strong>DevOps</strong></td>
-<td>
-<img src="https://img.shields.io/badge/Git-F05032?logo=git&logoColor=white" />
-<img src="https://img.shields.io/badge/npm-CB3837?logo=npm&logoColor=white" />
-<img src="https://img.shields.io/badge/pip-3775A9?logo=pypi&logoColor=white" />
+
+1. Fork the repository<td><strong>DevOps</strong></td>
+
+2. Create feature branch (`git checkout -b feature/AmazingFeature`)<td>
+
+3. Commit changes (`git commit -m 'Add AmazingFeature'`)<img src="https://img.shields.io/badge/Git-F05032?logo=git&logoColor=white" />
+
+4. Push to branch (`git push origin feature/AmazingFeature`)<img src="https://img.shields.io/badge/npm-CB3837?logo=npm&logoColor=white" />
+
+5. Open Pull Request<img src="https://img.shields.io/badge/pip-3775A9?logo=pypi&logoColor=white" />
+
 </td>
-</tr>
+
+---</tr>
+
 </table>
 
+## 🐛 Troubleshooting
+
 ---
 
-## 📂 Project Structure
+**Module not found?**
 
-```
-FinSentiment-Pro/
+```bash## 📂 Project Structure
+
+conda activate finsentiment
+
+pip install -r requirements.txt```
+
+```FinSentiment-Pro/
+
 │
-├── 🎨 Frontend
-│   ├── src/
-│   │   ├── components/
+
+**CORS errors?**├── 🎨 Frontend
+
+- Check Flask runs on `0.0.0.0:5000`│   ├── src/
+
+- Verify CORS config in `app.py`│   │   ├── components/
+
 │   │   │   ├── Header.tsx              # Navigation with scroll effects
-│   │   │   ├── Hero.tsx                # Landing section with quick search
-│   │   │   ├── Dashboard.tsx           # Main analysis dashboard
-│   │   │   ├── TrendingStocks.tsx      # Real-time trending with filters
-│   │   │   ├── Features.tsx            # Feature showcase cards
+
+**API rate limits?**│   │   │   ├── Hero.tsx                # Landing section with quick search
+
+- Use multiple API keys│   │   │   ├── Dashboard.tsx           # Main analysis dashboard
+
+- Enable `DEMO_MODE=true`│   │   │   ├── TrendingStocks.tsx      # Real-time trending with filters
+
+- Increase cache duration│   │   │   ├── Features.tsx            # Feature showcase cards
+
 │   │   │   ├── About.tsx, Contact.tsx, Footer.tsx
-│   │   │   └── dashboard/
+
+---│   │   │   └── dashboard/
+
 │   │   │       ├── SearchSection.tsx   # Smart ticker search
-│   │   │       ├── OverallSentimentGauge.tsx
+
+## 📚 Resources│   │   │       ├── OverallSentimentGauge.tsx
+
 │   │   │       ├── TimelineChart.tsx   # Sentiment over time
-│   │   │       ├── RadarChart.tsx      # Multi-dimensional view
-│   │   │       ├── SourceComparison.tsx
-│   │   │       ├── CalendarHeatmap.tsx
-│   │   │       ├── CorrelationScatter.tsx
+
+- [FinBERT Paper](https://arxiv.org/abs/1908.10063)│   │   │       ├── RadarChart.tsx      # Multi-dimensional view
+
+- [NewsAPI Docs](https://newsapi.org/docs)│   │   │       ├── SourceComparison.tsx
+
+- [Alpha Vantage API](https://www.alphavantage.co/documentation/)│   │   │       ├── CalendarHeatmap.tsx
+
+- [HuggingFace Transformers](https://github.com/huggingface/transformers)│   │   │       ├── CorrelationScatter.tsx
+
 │   │   │       ├── AIInsights.tsx
-│   │   │       └── ExportPanel.tsx
+
+---│   │   │       └── ExportPanel.tsx
+
 │   │   ├── store/
-│   │   │   └── useStore.ts             # Zustand state management
+
+## 🎖️ Acknowledgments│   │   │   └── useStore.ts             # Zustand state management
+
 │   │   ├── types/
-│   │   │   └── index.ts                # TypeScript definitions
-│   │   ├── App.tsx                     # Root component
-│   │   ├── main.tsx                    # Entry point
-│   │   └── index.css                   # Global styles + Tailwind
+
+- **ProsusAI** - FinBERT model│   │   │   └── index.ts                # TypeScript definitions
+
+- **HuggingFace** - Transformers library│   │   ├── App.tsx                     # Root component
+
+- **NewsAPI** - News aggregation│   │   ├── main.tsx                    # Entry point
+
+- **Alpha Vantage** - Financial data│   │   └── index.css                   # Global styles + Tailwind
+
 │   ├── public/                         # Static assets
-│   ├── index.html
+
+---│   ├── index.html
+
 │   ├── package.json
-│   ├── tsconfig.json
+
+## 📄 License│   ├── tsconfig.json
+
 │   ├── tailwind.config.js
-│   └── vite.config.ts
+
+MIT License - see [LICENSE](LICENSE) file│   └── vite.config.ts
+
 │
-├── ⚙️ Backend
+
+---├── ⚙️ Backend
+
 │   ├── app.py                          # Flask API server
-│   ├── requirements.txt                # Python dependencies
+
+## 👨‍💻 Author│   ├── requirements.txt                # Python dependencies
+
 │   ├── stock_database.json             # Local ticker database
-│   └── .env                            # Environment variables
-│
+
+**Gaveesh**  │   └── .env                            # Environment variables
+
+GitHub: [@HackWGaveesh](https://github.com/HackWGaveesh)│
+
 ├── 📄 Documentation
-│   ├── README.md                       # This file
+
+---│   ├── README.md                       # This file
+
 │   └── LICENSE                         # MIT License
-│
+
+## 📞 Support│
+
 └── 🔧 Configuration
-    ├── .gitignore
-    └── .vscode/
+
+- 🐛 [Issues](https://github.com/HackWGaveesh/FinSentiment-Pro/issues)    ├── .gitignore
+
+- 💬 [Discussions](https://github.com/HackWGaveesh/FinSentiment-Pro/discussions)    └── .vscode/
+
 ```
 
 ---
+
+---
+
+<div align="center">
 
 ## 🚀 Quick Start
 
+### ⭐ Star this repo if you found it helpful!
+
 ### Prerequisites
 
+**Made with ❤️ for traders and investors**
+
 Ensure you have the following installed:
+
+</div>
 
 - **Node.js** 18+ ([Download](https://nodejs.org/))
 - **Python** 3.8+ ([Download](https://www.python.org/))

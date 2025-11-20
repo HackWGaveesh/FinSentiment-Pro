@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Search API</title>
+    <style>
+        body { font-family: Arial; padding: 20px; background: #1a1a2e; color: white; }
+        input { padding: 10px; width: 300px; font-size: 16px; }
+        #results { margin-top: 20px; }
+        .result { padding: 10px; margin: 5px 0; background: #16213e; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Stock Search Test</h1>
+    <input type="text" id="search" placeholder="Type stock name (e.g., RELIANCE)" />
+    <div id="status"></div>
+    <div id="results"></div>
+
+    <script>
+        const searchInput = document.getElementById('search');
+        const resultsDiv = document.getElementById('results');
+        const statusDiv = document.getElementById('status');
+
+        let timeout;
+        searchInput.addEventListener('input', (e) => {
+            clearTimeout(timeout);
+            const query = e.target.value;
+            
+            if (query.length < 1) {
+                resultsDiv.innerHTML = '';
+                statusDiv.innerHTML = '';
+                return;
+            }
+
+            statusDiv.innerHTML = '<p>Searching...</p>';
+            
+            timeout = setTimeout(async () => {
+                try {
+                    const response = await fetch(`http://127.0.0.1:5000/api/search?q=${encodeURIComponent(query)}&limit=8`);
+                    const data = await response.json();
+                    
+                    statusDiv.innerHTML = `<p style="color: #0f0;">✓ Found ${data.length} results</p>`;
+                    
+                    resultsDiv.innerHTML = data.map(stock => `
+                        <div class="result">
+                            <strong>${stock.name}</strong><br>
+                            <small>${stock.ticker} • ${stock.exchange} • ${stock.country}</small>
+                        </div>
+                    `).join('');
+                } catch (error) {
+                    statusDiv.innerHTML = `<p style="color: #f00;">✗ Error: ${error.message}</p>`;
+                    resultsDiv.innerHTML = '';
+                }
+            }, 300);
+        });
+    </script>
+</body>
+</html>

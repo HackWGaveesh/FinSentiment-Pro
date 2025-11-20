@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Connection Test</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            margin: 0;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        h1 { margin-top: 0; }
+        input {
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            border: none;
+            border-radius: 10px;
+            margin: 20px 0;
+            box-sizing: border-box;
+        }
+        .status {
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        .success { background: rgba(16, 185, 129, 0.3); border: 2px solid #10b981; }
+        .error { background: rgba(239, 68, 68, 0.3); border: 2px solid #ef4444; }
+        .info { background: rgba(59, 130, 246, 0.3); border: 2px solid #3b82f6; }
+        .result {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border-left: 4px solid #10b981;
+        }
+        .result strong { color: #fbbf24; }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Stock Database Connection Test</h1>
+        <p>This page tests if your browser can connect to the backend API.</p>
+        
+        <input 
+            type="text" 
+            id="search" 
+            placeholder="Type a stock name (e.g., RELIANCE, TCS, HDFC)"
+            autocomplete="off"
+        />
+        
+        <div id="status"></div>
+        <div id="results"></div>
+        
+        <h2>📊 System Status</h2>
+        <div id="systemStatus"></div>
+    </div>
+
+    <script>
+        const searchInput = document.getElementById('search');
+        const statusDiv = document.getElementById('status');
+        const resultsDiv = document.getElementById('results');
+        const systemStatusDiv = document.getElementById('systemStatus');
+
+        // Test backend connection on load
+        async function testBackend() {
+            try {
+                const response = await fetch('http://localhost:5000/api/health');
+                const data = await response.json();
+                systemStatusDiv.innerHTML = `
+                    <div class="status success">
+                        ✓ Backend API: Connected (${data.status})
+                    </div>
+                    <div class="status success">
+                        ✓ Model: ${data.model}
+                    </div>
+                `;
+            } catch (error) {
+                systemStatusDiv.innerHTML = `
+                    <div class="status error">
+                        ✗ Backend API: Failed to connect<br>
+                        Error: ${error.message}<br>
+                        <small>Make sure the backend is running on http://localhost:5000</small>
+                    </div>
+                `;
+            }
+        }
+
+        // Search stocks
+        let timeout;
+        searchInput.addEventListener('input', (e) => {
+            clearTimeout(timeout);
+            const query = e.target.value.trim();
+            
+            if (query.length < 1) {
+                resultsDiv.innerHTML = '';
+                statusDiv.innerHTML = '';
+                return;
+            }
+
+            statusDiv.innerHTML = `
+                <div class="status info">
+                    <span class="loading"></span> Searching for "${query}"...
+                </div>
+            `;
+            
+            timeout = setTimeout(async () => {
+                try {
+                    const url = \`http://localhost:5000/api/search?q=\${encodeURIComponent(query)}&limit=10\`;
+                    console.log('Fetching:', url);
+                    
+                    const response = await fetch(url);
+                    
+                    if (!response.ok) {
+                        throw new Error(\`HTTP \${response.status}: \${response.statusText}\`);
+                    }
+                    
+                    const data = await response.json();
+                    
+                    statusDiv.innerHTML = \`
+                        <div class="status success">
+                            ✓ Found \${data.length} results
+                        </div>
+                    \`;
+                    
+                    if (data.length === 0) {
+                        resultsDiv.innerHTML = '<div class="status info">No stocks found. Try another search term.</div>';
+                    } else {
+                        resultsDiv.innerHTML = '<h3>Search Results:</h3>' + data.map(stock => \`
+                            <div class="result">
+                                <strong>\${stock.name}</strong><br>
+                                <small>\${stock.ticker} • \${stock.exchange} • \${stock.country}</small>
+                            </div>
+                        \`).join('');
+                    }
+                } catch (error) {
+                    console.error('Search error:', error);
+                    statusDiv.innerHTML = \`
+                        <div class="status error">
+                            ✗ Search failed: \${error.message}<br>
+                            <small>Check the browser console (F12) for details</small>
+                        </div>
+                    \`;
+                    resultsDiv.innerHTML = '';
+                }
+            }, 300);
+        });
+
+        // Test on load
+        testBackend();
+    </script>
+</body>
+</html>
